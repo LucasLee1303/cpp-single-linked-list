@@ -97,7 +97,6 @@ class SingleLinkedList {
         // Инкремент итератора, не указывающего на существующий элемент списка,
         // приводит к неопределённому поведению
         BasicIterator operator++(int) noexcept {
-            assert(node_ != nullptr);
             auto old_value(*this);
             ++(*this);
             return old_value;
@@ -124,8 +123,8 @@ class SingleLinkedList {
     private:
         Node* node_ = nullptr;
     };
-    
-    public:
+
+public:
     using value_type = Type;
     using reference = value_type&;
     using const_reference = const value_type&;
@@ -172,7 +171,7 @@ class SingleLinkedList {
     [[nodiscard]] ConstIterator cend() const noexcept {
         return ConstIterator{ nullptr };
     }
-    
+
     // Возвращает итератор, указывающий на позицию перед первым элементом односвязного списка.
     // Разыменовывать этот итератор нельзя - попытка разыменования приведёт к неопределённому поведению
     [[nodiscard]] Iterator before_begin() noexcept {
@@ -234,7 +233,7 @@ class SingleLinkedList {
 
         return Iterator{ pos.node_->next_node };
     }
-    
+
     // Вставляет элемент value в начало списка за время O(1)
     void PushFront(const Type& value) {
         head_.next_node = new Node(value, head_.next_node);
@@ -251,7 +250,7 @@ class SingleLinkedList {
         }
         size_ = 0;
     }
-    
+
     // Возвращает количество элементов в списке за время O(1)
     [[nodiscard]] size_t GetSize() const noexcept {
         return size_;
@@ -261,36 +260,21 @@ class SingleLinkedList {
     [[nodiscard]] bool IsEmpty() const noexcept {
         return size_ == 0;
     }
-    
-    SingleLinkedList() : size_(0) {}
-    
-    template<typename T>
-    void TmpSingleLinkedList(T& element) {
-        SingleLinkedList tmp_;
-        SingleLinkedList tmp_reverse;
 
-        for (auto it = element.begin(); it != element.end(); ++it) {
-            tmp_reverse.PushFront(*it);
-        }
-	
-        for (auto it = tmp_reverse.begin(); it != tmp_reverse.end(); ++it) {
-            tmp_.PushFront(*it);
-        }
-        Clear();
-        swap(tmp_);
-    }
+    SingleLinkedList() : size_(0) {}
+
 
     SingleLinkedList(std::initializer_list<Type> values) {
         // Реализуйте конструктор самостоятельно
-        TmpSingleLinkedList(values);
+        InitializationSingleLinkedList(values);
     }
 
     SingleLinkedList(const SingleLinkedList& other) {
         // Реализуйте конструктор самостоятельно
         assert(size_ == 0 && head_.next_node == nullptr);
-        TmpSingleLinkedList(other);
+        InitializationSingleLinkedList(other);
     }
-    
+
     SingleLinkedList& operator=(const SingleLinkedList& rhs) {
         // Реализуйте присваивание самостоятельно
         if (this != &rhs) {
@@ -306,15 +290,32 @@ class SingleLinkedList {
         std::swap(other.head_.next_node, head_.next_node);
         std::swap(other.size_, size_);
     }
-    
+
     ~SingleLinkedList() {
         Clear();
     }
-    
-    private:
+
+private:
     // Фиктивный узел, используется для вставки "перед первым элементом"
     Node head_;
     size_t size_ = 0;
+
+    //подумать над альтернативой через итераторы!!
+    template<typename T>
+    void InitializationSingleLinkedList(T& element) {
+        SingleLinkedList tmp_;
+        SingleLinkedList tmp_reverse;
+
+        for (auto it = element.begin(); it != element.end(); ++it) {
+            tmp_reverse.PushFront(*it);
+        }
+
+        for (auto it = tmp_reverse.begin(); it != tmp_reverse.end(); ++it) {
+            tmp_.PushFront(*it);
+        }
+        Clear();
+        swap(tmp_);
+    }
 
 };
 
@@ -327,7 +328,7 @@ void swap(SingleLinkedList<Type>& lhs, SingleLinkedList<Type>& rhs) noexcept {
 template <typename Type>
 bool operator==(const SingleLinkedList<Type>& lhs, const SingleLinkedList<Type>& rhs) {
     // Заглушка. Реализуйте сравнение самостоятельно
-    return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+    return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end(), [](Type lhs, Type rhs) {return lhs == rhs; });
 }
 
 template <typename Type>
