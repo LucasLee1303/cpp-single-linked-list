@@ -266,13 +266,13 @@ public:
 
     SingleLinkedList(std::initializer_list<Type> values) {
         // Реализуйте конструктор самостоятельно
-        InitializationSingleLinkedList(values);
+        InitSingleLinkedList(values);
     }
 
     SingleLinkedList(const SingleLinkedList& other) {
         // Реализуйте конструктор самостоятельно
         assert(size_ == 0 && head_.next_node == nullptr);
-        InitializationSingleLinkedList(other);
+        InitSingleLinkedList(other);
     }
 
     SingleLinkedList& operator=(const SingleLinkedList& rhs) {
@@ -302,7 +302,7 @@ private:
 
     //подумать над альтернативой через итераторы!!
     template<typename T>
-    void InitializationSingleLinkedList(T& element) {
+    void InitSingleLinkedList(T& element) {
         SingleLinkedList tmp_;
         SingleLinkedList tmp_reverse;
 
@@ -328,6 +328,7 @@ void swap(SingleLinkedList<Type>& lhs, SingleLinkedList<Type>& rhs) noexcept {
 template <typename Type>
 bool operator==(const SingleLinkedList<Type>& lhs, const SingleLinkedList<Type>& rhs) {
     // Заглушка. Реализуйте сравнение самостоятельно
+    if (lhs.GetSize() != rhs.GetSize()) return false;
     return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end(), [](Type lhs, Type rhs) {return lhs == rhs; });
 }
 
